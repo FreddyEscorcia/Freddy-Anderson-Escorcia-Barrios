@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Instalaciones Rules
+    match /instalaciones/{id} {
+      allow read, list: if isSignedIn();
+      
+      allow create: if isSignedIn() 
+        && isValidId(id)
+        && isValidInstalacion(incoming())
+        && incoming().createdAt == request.time;
+        
+      allow update: if isSignedIn()
+        && isValidId(id)
+        && isValidInstalacion(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+        
+      allow delete: if isSignedIn();
+    }
+
+    // Cuadrillas Rules
+    match /cuadrillas/{id} {
+      allow read, list: if isSignedIn();
+      
+      allow create: if isSignedIn()
+        && isValidId(id)
+        && isValidCuadrilla(incoming());
+        
+      allow update: if isSignedIn()
+        && isValidId(id)
+        && isValidCuadrilla(incoming());
+        
+      allow delete: if isSignedIn();
+    }
+
+    // System Config Rules
+    match /system/{document=**} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Validation functions
+    function isValidInstalacion(data) {
+      return data.keys().hasAll(['ot', 'cliente', 'productoTecnologia', 'estado', 'porcentajeAvance'])
+        && data.ot is string && data.ot.size() > 0 && data.ot.size() <= 100
+        && data.cliente is string && data.cliente.size() > 0 && data.cliente.size() <= 200
+        && data.productoTecnologia is string && (data.productoTecnologia == 'F.O.' || data.productoTecnologia == 'GPON' || data.productoTecnologia == 'Starlink')
+        && data.estado is string && (data.estado == 'En programación' || data.estado == 'En proceso' || data.estado == 'Cliente' || data.estado == 'Soporte' || data.estado == 'Ejecutada' || data.estado == 'Anulada')
+        && (data.porcentajeAvance is int || data.porcentajeAvance is float)
+        && data.porcentajeAvance >= 0 && data.porcentajeAvance <= 100;
+    }
+
+    function isValidCuadrilla(data) {
+      return data.keys().hasAll(['nombre', 'ciudad', 'zonal'])
+        && data.nombre is string && data.nombre.size() > 0 && data.nombre.size() <= 100
+        && data.ciudad is string && data.ciudad.size() > 0 && data.ciudad.size() <= 100
+        && data.zonal is string && data.zonal.size() > 0 && data.zonal.size() <= 100;
+    }
+  }
+}

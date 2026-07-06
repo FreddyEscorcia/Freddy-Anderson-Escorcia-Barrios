@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "Instalacion": {
+      "title": "Instalacion",
+      "description": "Orden de trabajo o instalacion de telecomunicaciones",
+      "type": "object",
+      "properties": {
+        "ot": { "type": "string", "description": "Numero de Orden de Trabajo unico" },
+        "ordenCs": { "type": "string", "description": "Orden CS del CRM" },
+        "cliente": { "type": "string", "description": "Nombre del cliente" },
+        "subcliente": { "type": "string", "description": "Nombre del subcliente" },
+        "productoTecnologia": { "type": "string", "enum": ["F.O.", "GPON", "Starlink"], "description": "Tecnologia de instalacion" },
+        "bwCapacidad": { "type": "string", "description": "Capacidad o Ancho de Banda" },
+        "zonal": { "type": "string", "description": "Zonal geografica" },
+        "departamento": { "type": "string", "description": "Departamento" },
+        "ciudad": { "type": "string", "description": "Ciudad" },
+        "direccion": { "type": "string", "description": "Direccion de instalacion" },
+        "coordenadas": { "type": "string", "description": "Coordenadas latitud,longitud" },
+        "fechaOt": { "type": "string", "description": "Fecha de creacion de la OT" },
+        "fechaTentativaEntrega": { "type": "string", "description": "Fecha objetivo de entrega" },
+        "diasObjetivo": { "type": "number", "description": "Dias objetivo para entregar" },
+        "semaforo": { "type": "string", "enum": ["Verde", "Amarillo", "Rojo"], "description": "SLA visual de entrega" },
+        "cuadrilla": { "type": "string", "description": "ID de la cuadrilla asignada" },
+        "cuadrillaNombre": { "type": "string", "description": "Nombre de la cuadrilla asignada" },
+        "jefeZonal": { "type": "string", "description": "Jefe Zonal asignado" },
+        "gestor": { "type": "string", "description": "Gestor asignado" },
+        "implementador": { "type": "string", "description": "Implementador asignado" },
+        "estado": { "type": "string", "enum": ["En programación", "En proceso", "Cliente", "Soporte", "Ejecutada", "Anulada"], "description": "Estado actual" },
+        "porcentajeAvance": { "type": "number", "description": "Porcentaje de avance (0-100)" },
+        "fasesFin": { 
+          "type": "object", 
+          "description": "Fechas de finalizacion de cada fase"
+        },
+        "comentarios": { "type": "array", "description": "Historial de comentarios y reprogramaciones" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ot", "cliente", "productoTecnologia", "estado", "porcentajeAvance"]
+    },
+    "Cuadrilla": {
+      "title": "Cuadrilla",
+      "description": "Cuadrilla o equipo de tecnicos de instalacion",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nombre": { "type": "string" },
+        "integrantes": { "type": "string" },
+        "ciudad": { "type": "string" },
+        "zonal": { "type": "string" },
+        "activo": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["nombre", "ciudad", "zonal"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "Configuraciones globales o logs del sistema",
+      "type": "object",
+      "properties": {
+        "apiKeyWebhook": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/instalaciones/{id}": {
+      "schema": "Instalacion",
+      "description": "Coleccion de instalaciones u ordenes de trabajo"
+    },
+    "/cuadrillas/{id}": {
+      "schema": "Cuadrilla",
+      "description": "Coleccion de cuadrillas de tecnicos"
+    },
+    "/system/config": {
+      "schema": "Config",
+      "description": "Configuracion general del sistema"
+    }
+  }
+}

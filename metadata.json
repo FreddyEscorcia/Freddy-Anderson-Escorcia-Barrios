@@ -1,0 +1,6 @@
+{
+  "name": "Control de Instalaciones de Telecomunicaciones",
+  "description": "Sistema centralizado de control, seguimiento y automatización de instalaciones de telecomunicaciones (F.O., GPON y Starlink) con KPI, Kanban y simulador de Webhook CRM.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
